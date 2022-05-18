@@ -1,4 +1,5 @@
 import returnStockByIdPort from "../ports/returnStockByIdPort.js"
+import getCurrencyFromDB from "../ports/getCurrencyDbPort.js";
 
 const currencies = [{ id: 0, currency: 'AED' },
 { id: 1, currency: 'AFN' },
@@ -164,20 +165,18 @@ const currencies = [{ id: 0, currency: 'AED' },
 
 
 async function retriveStockValues(id) {
-    const value = currencies.find(currency => currency.id == id);
-    if (value) {
-        try {
-            const currencyList = await returnStockByIdPort(value.currency);
+    try {
+        const currency = await getCurrencyFromDB(id);
+        const currencyList = await returnStockByIdPort(currency.currency);
             let result = {
                 id: id,
                 currency: currencyList.base_code,
                 exchangeRates: currencyList.rates
             }
             return result;
-        }
-        catch (err) {
-            console.log(err);
-        }
+
+    } catch (error) {
+        console.log(error)
     }
 }
 

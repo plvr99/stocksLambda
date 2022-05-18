@@ -5,8 +5,8 @@ provider:
   name: aws
   runtime: nodejs14.x
   environment:
-  TABLE_NAME:
-    Ref: currenciesTable
+    TABLE_NAME:
+      Ref: currenciesTable
   iamRoleStatements:
   - Effect: Allow
     Action:
@@ -21,29 +21,24 @@ provider:
       - "Fn::GetAtt": [currenciesTable, Arn]
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   stocks:
     handler: handler.stocks
     events:
       - httpApi:
           path: /stocks/{id}
           method: get
+      - httpApi:
+          path: /stocks
+          method: post
 resources:
   Resources:
-    myTable:
+    currenciesTable:
       Type: AWS::DynamoDB::Table
-        Properties:
+      Properties:
         TableName: currenciesTable
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: N
-          - AttributeName: currencyName
-            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
