@@ -4,6 +4,21 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs14.x
+  environment:
+  TABLE_NAME:
+    Ref: currenciesTable
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - dynamodb:DescribeTable
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+    Resource:
+      - "Fn::GetAtt": [currenciesTable, Arn]
 
 functions:
   hello:
@@ -18,4 +33,20 @@ functions:
       - httpApi:
           path: /stocks/{id}
           method: get
-
+resources:
+  Resources:
+    myTable:
+      Type: AWS::DynamoDB::Table
+        Properties:
+        TableName: currenciesTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+          - AttributeName: currencyName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
