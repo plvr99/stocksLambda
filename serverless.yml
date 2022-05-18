@@ -1,0 +1,21 @@
+service: hexagonal-structure-lamda-adnanP
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+  stocks:
+    handler: handler.stocks
+    events:
+      - httpApi:
+          path: /stocks/{id}
+          method: get
+
