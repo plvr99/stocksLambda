@@ -16,7 +16,6 @@ async function getStockById (stockID){
         console.log(err);
         return err;
     }
-
     return res;
 } 
 
