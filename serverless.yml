@@ -6,7 +6,7 @@ provider:
   runtime: nodejs14.x
   environment:
     TABLE_NAME:
-      Ref: currenciesTable
+      Ref: productsTable
   iamRoleStatements:
   - Effect: Allow
     Action:
@@ -18,27 +18,36 @@ provider:
       - dynamodb:UpdateItem
       - dynamodb:DeleteItem
     Resource:
-      - "Fn::GetAtt": [currenciesTable, Arn]
+      - "Fn::GetAtt": [productsTable, Arn]
 
 functions:
-  stocks:
-    handler: handler.stocks
+  router:
+    handler: handler.router
     events:
       - httpApi:
-          path: /stocks/{id}
+          path: /sellableProduct
           method: get
       - httpApi:
-          path: /stocks
+          path: /dynamoDB/{productId}
+          method: get
+      - httpApi:
+          path: /dynamoDB/{productId}
+          method: put
+      - httpApi:
+          path: /dynamoDB
           method: post
+      - httpApi:
+          path: /dynamoDB/{productId}
+          method: delete    
 resources:
   Resources:
-    currenciesTable:
+    productsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: currenciesTable
+        TableName: productsTable
         AttributeDefinitions:
           - AttributeName: id
-            AttributeType: N
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
