@@ -1,8 +1,8 @@
 import { deleteProduct, postProduct, retrieveProduct, updateProductData } from "../domains/ProductsDomain.js";
 
-export async function handleGetProductRequest(productId){
+export async function handleGetProductRequest(productId, exchangeCurrency){
     try {
-        const response = await retrieveProduct(productId);
+        const response = await retrieveProduct(productId, exchangeCurrency);
         return response;
     } catch (error) {
         console.log(error)

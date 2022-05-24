@@ -29,7 +29,7 @@ export async function deleteProduct(productId) {
     try {
         console.log("deleting..")
         const Key = { id: productId };
-        await db.delete({ TableName, Key }).promise();
+        await db.delete({ TableName, Key}).promise();
         return true;
     } catch (error) {
         console.log("ProductsDB")
@@ -39,13 +39,28 @@ export async function deleteProduct(productId) {
 
 export async function updateProduct(product) {
     try {
+        const params = {
+            TableName,
+            Key: {
+                id: product.id
+            },
+            UpdateExpression: "SET description = :description, inStock = :inStock, price = :price, review = :review, title = :title",
+            ExpressionAttributeValues: {
+                ":description": product.description,
+                ":inStock": product.inStock,
+                ":price": product.price,
+                ":review": product.review,
+                ":title" : product.title,
+            },
+            ReturnValues: "ALL_NEW"
+        };
         console.log("product to update");
         console.log(product);
-        await db.put({
-            Item: product,
-            TableName
-        }).promise();
-        return product;
+        let updatedItem= await db.update(params).promise();
+        console.log("updated item");
+        console.log(updatedItem);
+        let updatedProduct = {id : product.id, ...updatedItem.Attributes};
+        return updatedProduct;
     } catch (error) {
         console.log(error);
     }

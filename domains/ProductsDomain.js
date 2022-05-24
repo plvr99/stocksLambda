@@ -1,14 +1,18 @@
 import { uuid } from "uuidv4";
-import { updateProduct } from "../adapters/ProudctsDB.js";
+import returnExchangeRateCurrency from "../ports/CurrencyExchangeRatePort.js";
+
+
 import { deleteProductData, getProductData, postProductData, updateOrPostProductData } from "../ports/ProductsRepository.js";
 
-export async function retrieveProduct(productId) {
-    const data = await getProductData(productId);
+export async function retrieveProduct(productId, exchangeCurrency) {
+    let data = await getProductData(productId);
+    const exchangeRate = exchangeCurrency ? await returnExchangeRateCurrency('EUR', exchangeCurrency) : 1;
     console.log("Product")
     console.log(data)
     //business logic ...
-    if (!data.inStock) {
-        return { message: "The item is not in stock" };
+    if(!data.id) return null;
+    if(data.price) {
+        data.price = data.price * exchangeRate;
     }
     return data;
 }
